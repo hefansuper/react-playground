@@ -2,12 +2,13 @@
  * @Author: stephenHe
  * @Date: 2025-03-31 15:47:22
  * @LastEditors: stephenHe
- * @LastEditTime: 2025-04-02 13:33:43
+ * @LastEditTime: 2025-04-02 13:34:49
  * @Description: 左边的编辑器部分
  * @FilePath: /react playground/src/ReactPlayground/components/CodeEditor/index.tsx
  */
 
 import { useContext } from "react";
+import { debounce } from "lodash-es";
 
 import Editor from "./Editor";
 import FileNameList from "./FileNameList";
@@ -27,7 +28,7 @@ export default function CodeEditor() {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <FileNameList />
-      <Editor file={file} onChange={onEditorChange} />
+      <Editor file={file} onChange={debounce(onEditorChange, 500)} />
     </div>
   );
 }
