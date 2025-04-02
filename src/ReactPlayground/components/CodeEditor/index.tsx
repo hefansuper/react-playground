@@ -2,25 +2,27 @@
  * @Author: stephenHe
  * @Date: 2025-03-31 15:47:22
  * @LastEditors: stephenHe
- * @LastEditTime: 2025-03-31 22:16:18
+ * @LastEditTime: 2025-04-02 13:33:43
  * @Description: 左边的编辑器部分
  * @FilePath: /react playground/src/ReactPlayground/components/CodeEditor/index.tsx
  */
 
+import { useContext } from "react";
+
 import Editor from "./Editor";
 import FileNameList from "./FileNameList";
+import { PlaygroundContext } from "../../PlaygroundContext";
 
 export default function CodeEditor() {
-  const file = {
-    name: "guang.tsx",
-    value: 'import lodash from "lodash";\n\nconst a = <div>guang</div>',
-    language: "typescript",
-  };
+  const { files, setFiles, selectedFileName, setSelectedFileName } =
+    useContext(PlaygroundContext);
 
-  function onEditorChange() {
-    console.log(...arguments);
+  const file = files[selectedFileName];
+
+  function onEditorChange(value?: string) {
+    files[file.name].value = value!;
+    setFiles({ ...files });
   }
-
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
