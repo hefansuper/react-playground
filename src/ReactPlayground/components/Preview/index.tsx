@@ -4,10 +4,19 @@ import { PlaygroundContext } from "../../PlaygroundContext";
 import { compile } from "./compiler";
 import iframeRaw from "./iframe.html?raw";
 import { IMPORT_MAP_FILE_NAME } from "../../files";
+import { Message } from "../Message";
+
+interface MessageData {
+  data: {
+    type: string;
+    message: string;
+  };
+}
 
 export default function Preview() {
   const { files } = useContext(PlaygroundContext);
   const [compiledCode, setCompiledCode] = useState("");
+  const [error, setError] = useState("");
 
   const getIframeUrl = useCallback(() => {
     // 将编译后的代码和 importmap 插入到 iframe 中
@@ -37,6 +46,22 @@ export default function Preview() {
     setCompiledCode(res);
   }, [files]);
 
+  const handleMessage = (msg: MessageData) => {
+    const { type, message } = msg.data;
+    if (type === "ERROR") {
+      setError(message);
+    } else {
+      setError("");
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("message", handleMessage);
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
+
   return (
     <div style={{ height: "100%" }}>
       <iframe
@@ -48,6 +73,8 @@ export default function Preview() {
           border: "none",
         }}
       />
+
+      <Message type="error" content={error} />
     </div>
   );
 }
