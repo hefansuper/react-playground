@@ -2,7 +2,7 @@
  * @Author: stephenHe
  * @Date: 2025-03-31 15:47:22
  * @LastEditors: stephenHe
- * @LastEditTime: 2025-04-02 13:34:49
+ * @LastEditTime: 2025-04-03 20:39:54
  * @Description: 左边的编辑器部分
  * @FilePath: /react playground/src/ReactPlayground/components/CodeEditor/index.tsx
  */
@@ -15,7 +15,7 @@ import FileNameList from "./FileNameList";
 import { PlaygroundContext } from "../../PlaygroundContext";
 
 export default function CodeEditor() {
-  const { files, setFiles, selectedFileName, setSelectedFileName } =
+  const { files, setFiles, selectedFileName, setSelectedFileName, theme } =
     useContext(PlaygroundContext);
 
   const file = files[selectedFileName];
@@ -28,7 +28,13 @@ export default function CodeEditor() {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <FileNameList />
-      <Editor file={file} onChange={debounce(onEditorChange, 500)} />
+      <Editor
+        file={file}
+        onChange={debounce(onEditorChange, 500)}
+        options={{
+          theme: `vs-${theme}`,
+        }}
+      />
     </div>
   );
 }
