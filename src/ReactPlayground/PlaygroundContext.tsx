@@ -1,5 +1,10 @@
-import React, { PropsWithChildren, createContext, useState } from "react";
-import { fileName2Language } from "./utils";
+import React, {
+  PropsWithChildren,
+  createContext,
+  useEffect,
+  useState,
+} from "react";
+import { compress, fileName2Language, uncompress } from "./utils";
 import { initFiles } from "./files";
 
 export interface File {
@@ -31,10 +36,22 @@ export const PlaygroundContext = createContext<PlaygroundContext>({
   selectedFileName: "App.tsx",
 } as PlaygroundContext);
 
+// 获取url中的hash值，并解析成文件对象
+const getFilesFromUrl = () => {
+  let files: Files | undefined;
+  try {
+    const hash = uncompress(window.location.hash.slice(1));
+    files = JSON.parse(hash);
+  } catch (error) {
+    console.error(error);
+  }
+  return files;
+};
+
 // 高阶组件包裹Context，并注入Context的值，同时提供PlaygroundContext的具体实现。
 export const PlaygroundProvider = (props: PropsWithChildren) => {
   const { children } = props;
-  const [files, setFiles] = useState<Files>(initFiles);
+  const [files, setFiles] = useState<Files>(getFilesFromUrl() || initFiles);
   const [selectedFileName, setSelectedFileName] = useState("App.tsx");
   const [theme, setTheme] = useState<Theme>("light");
 
@@ -72,6 +89,12 @@ export const PlaygroundProvider = (props: PropsWithChildren) => {
       ...newFile,
     });
   };
+
+  // 每次更新的时候讲文件内容存储到hash中
+  useEffect(() => {
+    const hash = JSON.stringify(files);
+    window.location.hash = compress(hash);
+  }, [files]);
 
   return (
     <PlaygroundContext.Provider
